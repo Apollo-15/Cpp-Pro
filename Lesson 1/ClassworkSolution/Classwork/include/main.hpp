@@ -3,9 +3,14 @@
 
 #include <iostream>
 
-inline void HelloWorld()
+template<typename Container>
+void PrintContainer(const Container& c)
 {
-    std::cout << "Hello, World!" << std::endl;
+	for (auto value : c)
+	{
+		std::cout << value << " ";
+	}
+	std::cout << "\n";
 }
 
 #endif
