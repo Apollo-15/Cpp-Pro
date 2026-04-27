@@ -18,12 +18,9 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="A.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\A.hpp">
+    <ClInclude Include="include\Vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
