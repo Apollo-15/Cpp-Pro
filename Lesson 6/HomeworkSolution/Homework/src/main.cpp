@@ -4,9 +4,9 @@
 #include <thread>
 #include <vector>
 
-void ThreadsRange(std::vector<int>& vctr, size_t const start, size_t const rangeEnd, int const addValue)
+void ThreadsRange(std::vector<int>& vctr, size_t const rangeStart, size_t const rangeEnd, int const addValue)
 {
-	for (size_t i = start; i < rangeEnd; ++i)
+	for (size_t i = rangeStart; i < rangeEnd; ++i)
 	{
 		vctr[i] += addValue;
 	}
