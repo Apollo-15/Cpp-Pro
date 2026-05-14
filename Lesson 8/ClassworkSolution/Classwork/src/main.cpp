@@ -1,55 +1,26 @@
 ﻿#include <iostream>
 #include "../include/main.hpp"
 
-bool Func(std::mutex& m, std::vector<int>& v)
+bool Func(std::mutex& m)
 {
-    std::lock_guard<std::mutex> lc(m);
-    for (int& x : v)
-    {
-        if (x != 0)
-        {
-            x = 0;
-            return true;
-        }
-    }
-    return false;
-}
+	std::unique_lock<std::mutex> ul(m, std::defer_lock);
 
-void Thread(std::mutex& m, std::vector<int>& v)
-{
-    while (Func(m, v))
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    }
-}
+	if (ul.owns_lock())
+	{
+		std::cout << "Own\n";
+	}
+	else
+	{
+		std::cout << "Not own\n";
+	}
 
-void FillRandomNumbers(std::vector<int>& v, size_t const count)
-{
-    v.clear();
-    for (size_t i = 0; i < count; i++)
-    {
-	    v.push_back(rand() % 12345 + 1);
-    }
+	return true;
 }
-
 
 int main()
 {
 	std::mutex m;
-    std::vector<int> v;
-
-    FillRandomNumbers(v, 1234);
-
-    std::thread firstThread(Thread, std::ref(m), std::ref(v));
-    std::thread secondThread(Thread, std::ref(m), std::ref(v));
-
-    firstThread.join();
-    secondThread.join();
-
-    for (int x : v)
-    {
-	    std::cout << x << "\n";
-    }
+	Func(m);
 
 	return 0;
 }
