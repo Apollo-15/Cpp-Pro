@@ -1,26 +1,59 @@
 ﻿#include <iostream>
-#include "../include/main.hpp"
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
-bool Func(std::mutex& m)
+void InnerFunc(std::mutex& m, std::vector<int>& v, size_t index, size_t& szCount)
 {
-	std::unique_lock<std::mutex> ul(m, std::defer_lock);
+    std::lock_guard<std::mutex> lg(m);
 
-	if (ul.owns_lock())
-	{
-		std::cout << "Own\n";
-	}
-	else
-	{
-		std::cout << "Not own\n";
-	}
+    while (true)
+    {
+        if (v[index] != 0)
+        {
+            ++szCount;
+            v[index] = 0;
+            return;
+        }
+        ++index;
+        if (index == v.size())
+        {
+            return;
+        }
+    }
+}
 
-	return true;
+void Func(std::mutex& m, std::vector<int>& v, size_t& szCount)
+{
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        InnerFunc(m, v, i, szCount);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
 }
 
 int main()
 {
-	std::mutex m;
-	Func(m);
+    std::vector<int> v;
+    std::mutex m;
 
-	return 0;
+    for (size_t i = 0; i < 100; ++i)
+    {
+        v.push_back(rand() % 555 + 1);
+    }
+
+    size_t szCount1 = 0;
+    size_t szCount2 = 0;
+
+    std::thread th1(Func, std::ref(m), std::ref(v), std::ref(szCount1));
+    std::thread th2(Func, std::ref(m), std::ref(v), std::ref(szCount2));
+
+    th1.join();
+    th2.join();
+
+    std::cout << "Counts: " << szCount1 + szCount2 << "\n\n";
+
+    return 0;
 }
